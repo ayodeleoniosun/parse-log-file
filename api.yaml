@@ -1,0 +1,82 @@
+---
+openapi: 3.0.0
+info:
+  title: Log analytics API
+  description: Log stream analysis API
+  contact:
+    email: marko.schilde@legal.one
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/Legal-One/BECodingTest/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: analytics
+  description: Analytics functions
+paths:
+  /count:
+    get:
+      tags:
+      - analytics
+      summary: searches logs and provides aggregated count of matches
+      description: |
+        Count all matching items in the logs.
+      operationId: searchLogs
+      parameters:
+      - name: serviceNames
+        in: query
+        description: array of service names
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      - name: startDate
+        in: query
+        description: start date
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: dateTime
+      - name: endDate
+        in: query
+        description: end date
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: dateTime
+      - name: statusCode
+        in: query
+        description: filter on request status code
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: count of matching results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CountItem'
+        "400":
+          description: bad input parameter
+components:
+  schemas:
+    CountItem:
+      required:
+      - counter
+      type: object
+      properties:
+        counter:
+          minimum: 0
+          type: integer

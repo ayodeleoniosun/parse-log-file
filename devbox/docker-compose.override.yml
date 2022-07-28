@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+    dockerhost:
+        container_name: devbox-dockerhost
+        image: qoomon/docker-host
+        cap_add: [ 'NET_ADMIN', 'NET_RAW' ]
+        restart: on-failure
+
+    devbox:
+        depends_on: [ dockerhost ]
