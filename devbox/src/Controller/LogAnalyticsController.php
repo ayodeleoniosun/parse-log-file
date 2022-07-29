@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Service\Interfaces\LogAnalyticsServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Traits\ApiResponse;
@@ -20,23 +19,15 @@ class LogAnalyticsController extends AbstractController
         $this->logService = $logService;
     }
 
-    public function store(Request $request): JsonResponse
+    public function count(Request $request): Response
     {
-        $data = json_decode($request->getContent());
-        $response = $this->logService->store($data);
+        $response = $this->logService->count($request);
 
         return $this->response(
             'success',
-            'Log analytics successfully saved',
+            'Log analytics retrieved',
             $response,
-            Response::HTTP_CREATED
+            Response::HTTP_OK
         );
-    }
-
-    public function count(): Response
-    {
-        return $this->render('log_analytics/index.html.twig', [
-            'controller_name' => 'LogAnalyticsController',
-        ]);
     }
 }

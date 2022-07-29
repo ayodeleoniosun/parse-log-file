@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\LogAnalytics;
 use App\Repository\Interfaces\LogAnalyticsRepositoryInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 
 class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalyticsRepositoryInterface
 {
@@ -16,7 +17,7 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         $this->logAnalytics = $logAnalytics;
     }
 
-    public function save(object $data): LogAnalytics
+    public function save(object $data): void
     {
         $this->logAnalytics->setServiceName($data->service_name);
         $this->logAnalytics->setStartDate($data->start_date);
@@ -26,8 +27,11 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         $this->logAnalytics->setUpdatedAt($data->updated_at);
 
         $this->persistDatabase($this->logAnalytics);
+    }
 
-        return $this->find($this->logAnalytics->getId());
+    public function retrieve(Request $request): void
+    {
+        dd($request);
     }
 
     public function remove(LogAnalytics $entity): void
