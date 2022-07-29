@@ -17,6 +17,16 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
 
     public function store(object $data): LogAnalytics
     {
+        $data->start_date = \DateTime::createFromFormat('Y-m-d H:i:s', $data->start_date);
+        $data->end_date = \DateTime::createFromFormat('Y-m-d H:i:s', $data->end_date);
+        $data->created_at = new \DateTime('now');
+        $data->updated_at = new \DateTime('now');
+
         return $this->logRepo->save($data);
+    }
+
+    public function formatDate($date)
+    {
+
     }
 }

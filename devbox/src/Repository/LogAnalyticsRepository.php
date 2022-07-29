@@ -18,15 +18,12 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
 
     public function save(object $data): LogAnalytics
     {
-        $startDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data->start_date);
-        $endDate = \DateTime::createFromFormat('Y-m-d H:i:s', $data->end_date);
-
         $this->logAnalytics->setServiceName($data->service_name);
-        $this->logAnalytics->setStartDate($startDate);
-        $this->logAnalytics->setEndDate($endDate);
+        $this->logAnalytics->setStartDate($data->start_date);
+        $this->logAnalytics->setEndDate($data->end_date);
         $this->logAnalytics->setStatusCode($data->status_code);
-        $this->logAnalytics->setCreatedAt(new \DateTime('now'));
-        $this->logAnalytics->setUpdatedAt(new \DateTime('now'));
+        $this->logAnalytics->setCreatedAt($data->created_at);
+        $this->logAnalytics->setUpdatedAt($data->updated_at);
 
         $this->persistDatabase($this->logAnalytics);
 
