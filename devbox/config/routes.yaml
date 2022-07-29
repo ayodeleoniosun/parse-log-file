@@ -1,3 +1,9 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+store_analytics:
+    path: /store
+    controller: App\Controller\LogAnalyticsController::store
+    methods: POST
+
+analytics:
+    path: /count
+    controller: App\Controller\LogAnalyticsController::count
+    methods: GET
