@@ -35,16 +35,15 @@
             <arguments>
                 <array>
                     <!-- set this option to 0 to disable the DebugClassLoader integration -->
-                    <element key="debug-class-loader"><integer>0</integer></element>
+                    <element key="debug-class-loader">
+                        <integer>0</integer>
+                    </element>
                 </array>
             </arguments>
         </listener>
     </listeners>
 
-    <!-- Run `composer require symfony/panther` before enabling this extension -->
-    <!--
     <extensions>
-        <extension class="Symfony\Component\Panther\ServerExtension" />
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
     </extensions>
-    -->
 </phpunit>
