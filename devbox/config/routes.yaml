@@ -1,4 +1,4 @@
 analytics:
     path: /count
-    controller: App\Controller\LogAnalyticsController::count
+    controller: App\Controller\LogAnalyticsController::filter
     methods: GET

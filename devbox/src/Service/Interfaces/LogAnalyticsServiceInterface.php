@@ -8,5 +8,5 @@ interface LogAnalyticsServiceInterface
 {
     public function store(object $data): void;
 
-    public function count(Request $request): void;
+    public function filter(Request $request): array;
 }

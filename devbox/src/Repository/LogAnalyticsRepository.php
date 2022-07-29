@@ -29,9 +29,31 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         $this->persistDatabase($this->logAnalytics);
     }
 
-    public function retrieve(Request $request): void
+    public function filter(?array $serviceNames, ?string $startDate, ?string $endDate, ?int $statusCode): array
     {
-        dd($request);
+        $queryBuilder = $this->createQueryBuilder('log');
+
+        if (count($serviceNames) > 0) {
+            $queryBuilder->andWhere('log.service_name IN (:service_name)')
+                ->setParameter('service_name', $serviceNames);
+        }
+
+        if ($startDate) {
+            $queryBuilder->andWhere('log.start_date = :start_date')
+                ->setParameter('start_date', $startDate);
+        }
+
+        if ($endDate) {
+            $queryBuilder->andWhere('log.end_date = :end_date')
+                ->setParameter('end_date', $endDate);
+        }
+
+        if ($statusCode) {
+            $queryBuilder->andWhere('log.status_code = :status_code')
+                ->setParameter('status_code', $statusCode);
+        }
+
+        return $queryBuilder->orderBy('log.id')->getQuery()->getArrayResult();
     }
 
     public function remove(LogAnalytics $entity): void
@@ -39,29 +61,4 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
     }
-
-//    /**
-//     * @return LogAnalytics[] Returns an array of LogAnalytics objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('l.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
-
-//    public function findOneBySomeField($value): ?LogAnalytics
-//    {
-//        return $this->createQueryBuilder('l')
-//            ->andWhere('l.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
 }
