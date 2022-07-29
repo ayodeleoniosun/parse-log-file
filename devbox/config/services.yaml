@@ -26,7 +26,7 @@ services:
 
     app.repository.log-analytics-repository:
         class: App\Repository\LogAnalyticsRepository
-        tags: ["doctrine.repository_service"]
+        tags: [ "doctrine.repository_service" ]
         arguments:
             $logAnalytics: "@app.entity.log-analytics"
 
@@ -36,4 +36,4 @@ services:
     # please note that last definitions always *replace* previous ones
     App\Controller\:
         resource: "../src/Controller/"
-        tags: ["controller.service_arguments"]
+        tags: [ "controller.service_arguments" ]
