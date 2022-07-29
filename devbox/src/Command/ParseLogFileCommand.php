@@ -52,17 +52,23 @@ class ParseLogFileCommand extends Command
                 return 0;
             }
 
-            while (($line = fgets($handle)) !== false) {
+            $analytics = [];
+
+            while (!feof($handle)) {
+                $line = fgets($handle);
+
                 list($serviceName, $startDateAndTime, $statusCode) = $this->parseFileContent($line);
 
-                $payload = (object)[
+                $analytics[] = (object)[
                     "service_name" => strtolower($serviceName),
                     "start_date"   => $startDateAndTime,
                     "end_date"     => $startDateAndTime,
                     "status_code"  => $statusCode
                 ];
+            }
 
-                $this->logService->store($payload);
+            foreach ($analytics as $data) {
+                $this->logService->store($data);
             }
         }
 
