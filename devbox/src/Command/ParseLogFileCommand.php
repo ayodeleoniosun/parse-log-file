@@ -31,13 +31,6 @@ class ParseLogFileCommand extends Command
         $this->logService = $logService;
     }
 
-    protected function configure(): void
-    {
-        $this
-            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
-            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description');
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -81,11 +74,11 @@ class ParseLogFileCommand extends Command
     {
         //split each line by - - and get the array elements
         $splitLine = explode("- -", $line);
-        list ($serviceName, $others) = array_map('trim', $splitLine);
+        list($serviceName, $others) = array_map('trim', $splitLine);
 
         //split others (everything after the service name) and get their individual elements
         $splitOthers = explode(" ", $others);
-        list ($startDate, , $httpMethod, $endpoint, $protocol, $statusCode) = $splitOthers;
+        list($startDate, , $httpMethod, $endpoint, $protocol, $statusCode) = $splitOthers;
 
         //get start date by removing the first letter ([) and
         // Use the index of the first occurrence of colon (:) to get the start date in this format (d/M/Y)
