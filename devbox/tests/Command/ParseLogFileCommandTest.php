@@ -23,5 +23,10 @@ class ParseLogFileCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $commandTester->assertCommandIsSuccessful();
+
+        $output = $commandTester->getDisplay();
+
+        $this->assertStringContainsString('Log file parsed and inserted into database', $output);
+
     }
 }

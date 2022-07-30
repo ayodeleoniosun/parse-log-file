@@ -65,7 +65,7 @@ class ParseLogFileCommand extends Command
             }
         }
 
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('Log file parsed and inserted into database');
 
         return Command::SUCCESS;
     }
