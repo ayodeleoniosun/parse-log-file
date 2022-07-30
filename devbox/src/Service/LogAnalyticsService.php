@@ -16,14 +16,14 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
         $this->logRepo = $logRepo;
     }
 
-    public function store(object $data): void
+    public function store(object $data): LogAnalytics
     {
         $data->start_date = $this->formatDate($data->start_date);
         $data->end_date = $this->formatDate($data->end_date);
         $data->created_at = new \DateTime('now');
         $data->updated_at = new \DateTime('now');
 
-        $this->logRepo->save($data);
+        return $this->logRepo->save($data);
     }
 
     public function filter(Request $request): array

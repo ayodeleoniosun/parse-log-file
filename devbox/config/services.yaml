@@ -17,20 +17,8 @@ services:
     App\:
         resource: "../src/"
         exclude:
-            - "../src/DependencyInjection/"
-            - "../src/Entity/"
+            - "../src/{DependencyInjection, Entity}"
             - "../src/Kernel.php"
-
-    app.entity.log-analytics:
-        class: App\Entity\LogAnalytics
-
-    app.repository.log-analytics-repository:
-        class: App\Repository\LogAnalyticsRepository
-        tags: [ "doctrine.repository_service" ]
-        arguments:
-            $logAnalytics: "@app.entity.log-analytics"
-
-    App\Repository\LogAnalyticsRepository: "@app.repository.log-analytics-repository"
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
