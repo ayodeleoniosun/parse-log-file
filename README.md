@@ -1,56 +1,176 @@
-# Legal One BE Coding Challenge
+# Legal One Backend Assessment
 
-Thanks for going through our interview process and for taking the coding test!
+This repository is a solution to the assessment test as provided [Here](/devbox/resources/.assessment.md)
 
-## Problem description
+# Getting Started
 
-There is an aggregated log file that contains log lines from multiple services. This file is potentially very large (think hundreds of millions of lines). A very small example of this file can be found in the provided `logs.txt`.
+* Development Requirements
+* Installation
+* Starting Development Server
+* Documentation
+* Testing
 
-We would now like to analyze this file, e.g. count log lines for a specific service.
+## Development Requirements
 
-## Tasks
+This application currently runs on `Symfony 5.4.11` and the development requirements to get this application up and
+running are as follows:
 
-1. Build a console command that parses the file and inserts the data to a database (without using a parsing library). Pick any DB that you are familiar with and decide on a schema. The import should be triggered manually, and it should be able to start where it left off when interrupted.
+* PHP 8.1+
+* Docker (If preferred)
+* MySQL
+* git
+* Composer
 
-2. Build a RESTful service that implements the provided `api.yaml` OpenAPI specs.
+## Installation
 
-The service should query the database and provide a single endpoint `/count` which returns a count of rows that match the filter criteria.
+### Step 1: Clone the repository
 
-   a) This endpoint accepts a list of filters via GET request and allows zero or more filter parameters. The filters are:
-   - serviceNames
-   - statusCode
-   - startDate
-   - endDate
-   
-   b) Endpoint result:
-
+```bash
+https://github.com/ayodeleoniosun/legal-one-backend-assessment.git
 ```
-{
-    "counter": 1
-}
+
+### Step 2: Switch to the repo folder
+
+```bash
+cd legal-one-backend-assessment/devbox
 ```
 
-## Submit your solution
+### Step 3: Install all composer dependencies
 
-Please create a repository on Github, Gitlab or BitBucket with your solution.
+```bash
+composer install
+```
 
-Implement the solution in **PHP 8.1**, using the **Symfony** framework and document the solution in the README file. You may use the template app provided in the `devbox` folder (see included README file for details). 
+#### Step 4: Setup environment variable
 
-Once you are done with the challenge, please send us the link to the repo.
+- Copy `.env` to `.env.local` i.e `cp .env .env.local`
+- Update other variables as needed
 
-Wishing you the best.
+### Step 5: Run database migrations
 
-## Please note
+You can choose to run this app within or without docker container
 
-- For testing purposes take a look at our example log file `logs.txt`. It only contains 20 entries. Your submission will be evaluated with a much larger file (~ hundreds of millions of lines)
-- If you feel there are ambiguities in the requirements feel free to document them in the README file
+#### Running migrations without docker container
 
-## What we are looking at
+By default, the value for `DATABASE_URL`  in the env file is for docker configurations.
 
-We prefer quality over speed. It does not only matter if your solution produces correct results, we also take a closer look on the following criteria:
+To run the migrations without docker, update the `DATABASE_URL` to this value
 
-1. SOLID / DRY / KISS
-2. Design patterns
-3. Tests
-4. Readability / keeping best practice
-5. Documentation of the solution
+```bash
+mysql://root:@127.0.0.1:3306/legal_one
+``` 
+
+#### Create database
+
+```bash
+php bin/console doctrine:database:create 
+``` 
+
+#### Create database for testing
+
+```bash
+php bin/console doctrine:database:create --env=test 
+``` 
+
+#### Run migrations
+
+```bash
+php bin/console doctrine:migrations:migrate
+``` 
+
+#### Run migrations for testing
+
+```bash
+php bin/console doctrine:schema:update --env=test
+``` 
+
+###                                
+
+### Running migrations in docker container
+
+To run the migrations within docker, update the `DATABASE_URL` to this value (provided it was changed while running
+without docker containers)
+
+```bash
+mysql://root:root@devbox-mysql:3306/legal_one
+``` 
+
+#### Build docker
+
+```bash
+docker-compose up --build
+``` 
+
+#### Run docker containers
+
+```bash
+make run && make install
+``` 
+
+After running the above commands, the app will start running on port `9002` and the database would be created as well
+
+#### Enter container CLI to run commands
+
+```bash
+make enter
+``` 
+
+#### Run migrations
+
+```bash
+php bin/console doctrine:migrations:migrate
+``` 
+
+#### Run migrations for testing
+
+```bash
+php bin/console doctrine:schema:update --env=test
+``` 
+
+#### Exit container CLI to run other commands
+
+```bash
+exit
+``` 
+
+## Starting Development Server
+
+After the installation of the packages and running migrations, then, it's time to start the development server.
+
+Development server can be started in two ways:
+
+* Using ```symfony server:start```
+* Using Docker as highlighted above
+
+I recommend using docker to start the development server to ensure that the application works perfectly across all
+developers' machines regardless of their operating systems.
+
+### API Documentation
+
+Kindly refer to the documentation here to test the `count` endpoint
+
+### Testing
+
+To run tests without docker containers:
+
+```bash
+php bin/phpunit
+```
+
+To run tests within docker containers:
+
+#### Enter container CLI to run commands
+
+```bash
+make enter
+``` 
+
+#### Run tests
+
+```bash
+php bin/phpunit
+```
+
+##
+
+### `Entdecken! Explore!`
