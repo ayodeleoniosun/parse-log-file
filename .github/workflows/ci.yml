@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -13,7 +13,7 @@ jobs:
   phplint:
     name: Check syntax errors
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v3
       - uses: overtrue/phplint@8.0
@@ -37,14 +37,14 @@ jobs:
       - name: Install PHP
         uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
         with:
-          php-version: '8.1'
+          php-version: "8.1"
 
       - uses: actions/checkout@v3
-      
+
       - name: Copy env
         working-directory: ./devbox
         run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
-        
+
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v3
@@ -53,21 +53,21 @@ jobs:
           key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ runner.os }}-php-
-      
+
       - name: Install Dependencies
         working-directory: ./devbox
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-      
+
       - name: Run static analysis
         working-directory: ./devbox
-        run: vendor/bin/phpstan analyze --memory-limit=1G
+        run: vendor/bin/phpstan analyze src tests --memory-limit=1G
 
       - name: Create Database
         working-directory: ./devbox
         run: |
           mkdir -p data
           touch data/database.sqlite
-      
+
       - name: Execute tests
         working-directory: ./devbox
         env:
