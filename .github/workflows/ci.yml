@@ -13,15 +13,15 @@ env:
   directory: ./devbox
 
 jobs:
-  build:
-    name: Build
+  code-coverage:
+    name: "Code coverage and analysis"
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ${{ env.directory }}
 
     steps:
-      - name: Install PHP
+      - name: Setup PHP
         uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
         with:
           php-version: "8.1"
@@ -51,17 +51,57 @@ jobs:
       - name: Run PHPLint
         run: ./vendor/bin/phplint
 
-      # - name: Create Database
-      #   run: |
-      #     mkdir -p data
-      #     touch data/database.sqlite
+  tests:
+    name: "Run tests"
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
+          MYSQL_ROOT_PASSWORD: legal_one
+          MYSQL_DATABASE: legal_one
+        ports:
+          - 3306/tcp
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-      # - name: Run migrations
-      #   env:
-      #     DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-      #   run: |
-      #     php bin/console doctrine:database:create
-      #     php bin/console doctrine:migrations:migrate --no-interaction
+    defaults:
+      run:
+        working-directory: ${{ env.directory }}
+
+    steps:
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
+        with:
+          php-version: "8.1"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, mysqli
+
+      - uses: actions/checkout@v3
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: |
+          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+          composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Run migrations
+        run: |
+          composer require --dev symfony/orm-pack
+          php bin/console doctrine:database:drop --if-exists --force --env=test
+          php bin/console doctrine:database:create --if-not-exists --env=test
+          php bin/console doctrine:schema:update --env=test --force || echo "No migrations found or schema update failed"
+          php bin/console doctrine:migrations:migrate --env=test || echo "No migrations found or migration failed"
+          php bin/console doctrine:fixtures:load --no-interaction
+        env:
+          DATABASE_URL: mysql://root:legal_one@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one
 
       - name: Execute tests
         run: php bin/phpunit --stop-on-failure
