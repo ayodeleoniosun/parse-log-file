@@ -4,29 +4,29 @@ This repository is a solution to the assessment test as provided [Here](/devbox/
 
 # Getting Started
 
-* Development Requirements
-* Installation
-* Starting Development Server
-* Documentation
-* Testing
+- Development Requirements
+- Installation
+- Starting Development Server
+- Documentation
+- Testing
 
 ## Development Requirements
 
 This application currently runs on `Symfony 5.4.11` and the development requirements to get this application up and
 running are as follows:
 
-* PHP 8.1+
-* Docker (If preferred)
-* MySQL
-* git
-* Composer
+- PHP 8.1+
+- Docker (If preferred)
+- MySQL
+- git
+- Composer
 
 ## Installation
 
 ### Step 1: Clone the repository
 
 ```bash
-https://github.com/ayodeleoniosun/legal-one-backend-assessment.git
+git clone https://github.com/ayodeleoniosun/legal-one-backend-assessment.git
 ```
 
 ### Step 2: Switch to the repo folder
@@ -52,39 +52,39 @@ You can choose to run this app within or without docker container
 
 #### Running migrations without docker container
 
-By default, the value for `DATABASE_URL`  in the env file is for docker configurations.
+By default, the value for `DATABASE_URL` in the `.env.local` and `env.test` file is for docker configurations.
 
-To run the migrations without docker, update the `DATABASE_URL` to this value
+To run the migrations without docker, update the `DATABASE_URL` to this value in both `.env.local` and `.env.test`
 
 ```bash
 mysql://root:@127.0.0.1:3306/legal_one
-``` 
+```
 
 #### Create database
 
 ```bash
-php bin/console doctrine:database:create 
-``` 
+php bin/console doctrine:database:create
+```
 
 #### Create database for testing
 
 ```bash
-php bin/console doctrine:database:create --env=test 
-``` 
+php bin/console doctrine:database:create --env=test
+```
 
 #### Run migrations
 
 ```bash
 php bin/console doctrine:migrations:migrate
-``` 
+```
 
 #### Run migrations for testing
 
 ```bash
-php bin/console doctrine:schema:update --env=test
-``` 
+php bin/console doctrine:migrations:migrate --env=test
+```
 
-###                                
+###
 
 ### Running migrations in docker container
 
@@ -93,19 +93,19 @@ without docker containers)
 
 ```bash
 mysql://root:root@devbox-mysql:3306/legal_one
-``` 
+```
 
 #### Build docker
 
 ```bash
 docker-compose up --build
-``` 
+```
 
 #### Run docker containers
 
 ```bash
 make run && make install
-``` 
+```
 
 After running the above commands, the app will start running on port `9002` and the database would be created as well
 
@@ -113,25 +113,25 @@ After running the above commands, the app will start running on port `9002` and 
 
 ```bash
 make enter
-``` 
+```
 
 #### Run migrations
 
 ```bash
 php bin/console doctrine:migrations:migrate
-``` 
+```
 
 #### Run migrations for testing
 
 ```bash
-php bin/console doctrine:schema:update --env=test
-``` 
+php bin/console doctrine:migrations:migrate --env=test
+```
 
 #### Exit container CLI to run other commands
 
 ```bash
 exit
-``` 
+```
 
 ## Starting Development Server
 
@@ -139,8 +139,8 @@ After the installation of the packages and running migrations, then, it's time t
 
 Development server can be started in two ways:
 
-* Using ```symfony server:start```
-* Using Docker as highlighted above
+- Using `symfony server:start`
+- Using Docker as highlighted above
 
 I recommend using docker to start the development server to ensure that the application works perfectly across all
 developers' machines regardless of their operating systems.
@@ -163,7 +163,7 @@ To run tests within docker containers:
 
 ```bash
 make enter
-``` 
+```
 
 #### Run tests
 
