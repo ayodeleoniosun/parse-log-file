@@ -16,6 +16,10 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.directory }}
+
     steps:
       - name: Install PHP
         uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
@@ -33,42 +37,33 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-php-
 
-      - name: Build Symfony
-        working-directory: ${{ env.directory }}
+      - name: Install dependencies
         run: |
           php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
-      - name: Check the Symfony console
-        working-directory: ${{ env.directory }}
-        run: php bin/console about
-
       - name: Run static analysis
-        working-directory: ${{ env.directory }}
         run: ./vendor/bin/phpstan analyze src tests --memory-limit=1G
 
       - name: Run PHP Fixer
-        working-directory: ${{ env.directory }}
         run: ./vendor/bin/php-cs-fixer --config=.php-cs-fixer.php fix src tests
 
       - name: Run PHPLint
-        working-directory: ${{ env.directory }}
         run: ./vendor/bin/phplint
 
       - name: Create Database
-        working-directory: ${{ env.directory }}
         run: |
           mkdir -p data
           touch data/database.sqlite
 
       - name: Run migrations
-        working-directory: ${{ env.directory }}
+        env:
+          DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: |
           php bin/console doctrine:database:create
           php bin/console doctrine:migrations:migrate --no-interaction
 
       - name: Execute tests
-        working-directory: ${{ env.directory }}
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: ./vendor/bin/phpunit
