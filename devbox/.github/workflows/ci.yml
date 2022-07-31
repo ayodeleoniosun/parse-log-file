@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  phplint:
+    name: Check syntax errors
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: overtrue/phplint@8.0
+        with:
+          args: --configuration=.phplint.yml
+
+  phpfixer:
+    name: Run php fixer
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: OskarStark/php-cs-fixer-ga@3.7.0
+        with:
+          args: --config=.php-cs-fixer.php
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PHP
+        uses: shivammathur/setup-php@2cb9b829437ee246e9b3cac53555a39208ca6d28
+        with:
+          php-version: '8.1'
+
+      - uses: actions/checkout@v3
+      
+      - name: Copy env
+        run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+        
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+      
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+      
+      - name: Create Database
+        run: |
+          mkdir -p data
+          touch data/database.sqlite
+      
+      - name: Execute tests
+        env:
+          DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
+        run: vendor/bin/phpunit
+
+      - name: Run static analysis
+        run: vendor/bin/phpstan analyze --memory-limit=1G
