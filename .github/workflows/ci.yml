@@ -9,33 +9,10 @@ on:
 permissions:
   contents: read
 
+env:
+  directory: ./devbox
+
 jobs:
-  phplint:
-    name: Check syntax errors
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./devbox
-    
-    steps:
-      - uses: actions/checkout@v3
-      - uses: overtrue/phplint@8.0
-        with:
-          args: --configuration=.phplint.yml
-
-  phpfixer:
-    name: Run php fixer
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./devbox
-    
-    steps:
-      - uses: actions/checkout@v3
-      - uses: OskarStark/php-cs-fixer-ga@3.7.0
-        with:
-          args: --config=.php-cs-fixer.php
-
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -48,7 +25,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Copy env
-        working-directory: ./devbox
+        working-directory: ${{ env.directory }}
         run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
 
       - name: Cache Composer packages
@@ -61,21 +38,29 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install Dependencies
-        working-directory: ./devbox
+        working-directory: ${{ env.directory }}
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Run static analysis
-        working-directory: ./devbox
-        run: vendor/bin/phpstan analyze src tests --memory-limit=1G
+        working-directory: ${{ env.directory }}
+        run: ./vendor/bin/phpstan analyze src tests --memory-limit=1G
+
+      - name: Run PHP Fixer
+        working-directory: ${{ env.directory }}
+        run: ./vendor/bin/php-cs-fixer --config=.php-cs-fixer.php fix src tests
+
+      - name: Run PHPLint
+        working-directory: ${{ env.directory }}
+        run: ./vendor/bin/phplint
 
       - name: Create Database
-        working-directory: ./devbox
+        working-directory: ${{ env.directory }}
         run: |
           mkdir -p data
           touch data/database.sqlite
 
       - name: Execute tests
-        working-directory: ./devbox
+        working-directory: ${{ env.directory }}
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
-        run: vendor/bin/phpunit
+        run: ./vendor/bin/phpunit
