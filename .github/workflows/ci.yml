@@ -104,3 +104,5 @@ jobs:
 
       - name: Execute tests
         run: php bin/phpunit --stop-on-failure
+        env:
+          DATABASE_URL: mysql://root:legal_one@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one
