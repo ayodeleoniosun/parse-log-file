@@ -13,7 +13,7 @@ jobs:
   phplint:
     name: Check syntax errors
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v3
       - uses: overtrue/phplint@8.0
@@ -42,7 +42,8 @@ jobs:
       - uses: actions/checkout@v3
       
       - name: Copy env
-        run: php -r "file_exists('devbox/.env.test.local') || copy('devbox/.env.test', 'devbox/.env.test.local');"
+        working-directory: ./devbox
+        run: php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
         
       - name: Cache Composer packages
         id: composer-cache
@@ -54,17 +55,21 @@ jobs:
             ${{ runner.os }}-php-
       
       - name: Install Dependencies
+        working-directory: ./devbox
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       
       - name: Create Database
+        working-directory: ./devbox
         run: |
           mkdir -p data
           touch data/database.sqlite
       
       - name: Execute tests
+        working-directory: ./devbox
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: vendor/bin/phpunit
 
       - name: Run static analysis
+        working-directory: ./devbox
         run: vendor/bin/phpstan analyze --memory-limit=1G
