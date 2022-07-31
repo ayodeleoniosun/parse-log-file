@@ -13,7 +13,10 @@ jobs:
   phplint:
     name: Check syntax errors
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./devbox
+    
     steps:
       - uses: actions/checkout@v3
       - uses: overtrue/phplint@8.0
@@ -23,7 +26,10 @@ jobs:
   phpfixer:
     name: Run php fixer
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: ./devbox
+    
     steps:
       - uses: actions/checkout@v3
       - uses: OskarStark/php-cs-fixer-ga@3.7.0
