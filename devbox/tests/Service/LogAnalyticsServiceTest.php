@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Service;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 class LogAnalyticsServiceTest extends KernelTestCase
 {
     private EntityManager $entityManager;
+
     private ?object $logService;
 
     public function setUp(): void
@@ -24,13 +26,13 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
     public function testStoreLogAnalytics(): void
     {
-        $dateTime = date("Y-m-d H:i:s");
+        $dateTime = date('Y-m-d H:i:s');
 
-        $data = (object)[
+        $data = (object) [
             'service_name' => 'user-service',
-            'start_date'   => $dateTime,
-            'end_date'     => $dateTime,
-            'status_code'  => 201,
+            'start_date' => $dateTime,
+            'end_date' => $dateTime,
+            'status_code' => 201,
         ];
 
         $response = $this->logService->store($data);
@@ -43,7 +45,7 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
     public function testFilterLogAnalytics(): void
     {
-        $dateTime = date("Y-m-d H:i:s");
+        $dateTime = date('Y-m-d H:i:s');
 
         $fixture = new LogAnalyticsFixture();
         $fixture->load($this->entityManager);
@@ -52,8 +54,8 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
         $request->query->add([
             'serviceNames' => ['user-service', 'invoice-service'],
-            'statusCode'   => 201,
-            'startDate'    => $dateTime
+            'statusCode' => 201,
+            'startDate' => $dateTime,
         ]);
 
         $response = $this->logService->filter($request);
@@ -62,7 +64,7 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
     public function testFormatDate(): void
     {
-        $dateTime = date("Y-m-d H:i:s");
+        $dateTime = date('Y-m-d H:i:s');
         $formattedDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
 
         $response = $this->logService->formatDate($dateTime);

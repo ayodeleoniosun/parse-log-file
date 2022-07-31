@@ -2,7 +2,6 @@
 
 namespace Tests\Command;
 
-use App\DataFixtures\LogAnalyticsFixture;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -27,6 +26,5 @@ class ParseLogFileCommandTest extends KernelTestCase
         $output = $commandTester->getDisplay();
 
         $this->assertStringContainsString('Log file parsed and inserted into database', $output);
-
     }
 }

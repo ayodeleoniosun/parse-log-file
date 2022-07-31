@@ -28,10 +28,10 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
 
     public function filter(Request $request): array
     {
-        $serviceNames = (array)$request->get('serviceNames') ?? null;
+        $serviceNames = (array) $request->get('serviceNames') ?? null;
         $startDate = $request->get('startDate') ?? null;
         $endDate = $request->get('endDate') ?? null;
-        $statusCode = (int)$request->get('statusCode') ?? null;
+        $statusCode = (int) $request->get('statusCode') ?? null;
 
         return $this->logRepo->filter($serviceNames, $startDate, $endDate, $statusCode);
     }

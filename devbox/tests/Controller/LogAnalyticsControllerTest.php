@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class LogAnalyticsControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
+
     private $entityManager;
 
     public function setUp(): void
@@ -52,7 +53,7 @@ class LogAnalyticsControllerTest extends WebTestCase
 
     public function testFilterByServiceNamesAndStatusCodeAndStartDate(): void
     {
-        $dateTime = date("Y-m-d H:i:s");
+        $dateTime = date('Y-m-d H:i:s');
 
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $dateTime);
         $content = json_decode($this->client->getResponse()->getContent());
@@ -63,7 +64,7 @@ class LogAnalyticsControllerTest extends WebTestCase
 
     public function testFilterByAllCriteria(): void
     {
-        $dateTime = date("Y-m-d H:i:s");
+        $dateTime = date('Y-m-d H:i:s');
 
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $dateTime . '&endDate=' . $dateTime);
         $content = json_decode($this->client->getResponse()->getContent());

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Tests\Repository;
@@ -10,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class LogAnalyticsRepositoryTest extends KernelTestCase
 {
     private $logRepo;
+
     private $entityManager;
 
     public function setUp(): void
@@ -23,13 +25,13 @@ class LogAnalyticsRepositoryTest extends KernelTestCase
     {
         $dateTime = new \DateTime('now');
 
-        $data = (object)[
+        $data = (object) [
             'service_name' => 'user-service',
-            'start_date'   => $dateTime,
-            'end_date'     => $dateTime,
-            'status_code'  => 201,
-            'created_at'   => $dateTime,
-            'updated_at'   => $dateTime,
+            'start_date' => $dateTime,
+            'end_date' => $dateTime,
+            'status_code' => 201,
+            'created_at' => $dateTime,
+            'updated_at' => $dateTime,
         ];
 
         $response = $this->logRepo->save($data);
