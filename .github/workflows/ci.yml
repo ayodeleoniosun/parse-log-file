@@ -59,6 +59,11 @@ jobs:
           mkdir -p data
           touch data/database.sqlite
 
+      - name: Run migrations
+        run: |
+          php bin/console doctrine:database:create
+          php bin/console doctrine:migrations:migrate --no-interaction
+
       - name: Execute tests
         working-directory: ${{ env.directory }}
         env:
