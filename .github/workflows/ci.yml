@@ -58,6 +58,10 @@ jobs:
         working-directory: ./devbox
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
       
+      - name: Run static analysis
+        working-directory: ./devbox
+        run: vendor/bin/phpstan analyze --memory-limit=1G
+
       - name: Create Database
         working-directory: ./devbox
         run: |
@@ -69,7 +73,3 @@ jobs:
         env:
           DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
         run: vendor/bin/phpunit
-
-      - name: Run static analysis
-        working-directory: ./devbox
-        run: vendor/bin/phpstan analyze --memory-limit=1G
