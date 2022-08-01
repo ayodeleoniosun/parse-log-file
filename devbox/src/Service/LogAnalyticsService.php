@@ -2,7 +2,6 @@
 
 namespace App\Service;
 
-use App\Entity\LogAnalytics;
 use App\Repository\Interfaces\LogAnalyticsRepositoryInterface;
 use App\Service\Interfaces\LogAnalyticsServiceInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,14 +15,18 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
         $this->logRepo = $logRepo;
     }
 
-    public function store(object $data): LogAnalytics
+    public function store(array $analytics): void
     {
-        $data->start_date = $this->formatDate($data->start_date);
-        $data->end_date = $this->formatDate($data->end_date);
-        $data->created_at = new \DateTime('now');
-        $data->updated_at = new \DateTime('now');
+        $allAnalytics = array_map(function ($data) {
+            $data->start_date = $this->formatDate($data->start_date);
+            $data->end_date = $this->formatDate($data->end_date);
+            $data->created_at = new \DateTime('now');
+            $data->updated_at = new \DateTime('now');
 
-        return $this->logRepo->save($data);
+            return $data;
+        }, $analytics);
+
+        $this->logRepo->save($allAnalytics);
     }
 
     public function filter(Request $request): array

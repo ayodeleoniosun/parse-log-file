@@ -7,9 +7,12 @@ namespace Tests\Repository;
 use App\DataFixtures\LogAnalyticsFixture;
 use App\Entity\LogAnalytics;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Tests\Trait\LogAnalytics as LogAnalyticsTrait;
 
 class LogAnalyticsRepositoryTest extends KernelTestCase
 {
+    use LogAnalyticsTrait;
+
     private $logRepo;
 
     private $entityManager;
@@ -23,23 +26,9 @@ class LogAnalyticsRepositoryTest extends KernelTestCase
 
     public function testSaveLogAnalytics(): void
     {
-        $dateTime = new \DateTime('now');
-
-        $data = (object) [
-            'service_name' => 'user-service',
-            'start_date' => $dateTime,
-            'end_date' => $dateTime,
-            'status_code' => 201,
-            'created_at' => $dateTime,
-            'updated_at' => $dateTime,
-        ];
-
-        $response = $this->logRepo->save($data);
-
-        $this->assertEquals($response->getServiceName(), $data->service_name);
-        $this->assertEquals($response->getStartDate(), $data->start_date);
-        $this->assertEquals($response->getEndDate(), $data->end_date);
-        $this->assertEquals($response->getStatusCode(), $data->status_code);
+        $analytics = $this->generateLogAnalytics('repository');
+        $this->logRepo->save($analytics);
+        $this->assertTrue(true);
     }
 
     public function testFilterLogAnalytics(): void

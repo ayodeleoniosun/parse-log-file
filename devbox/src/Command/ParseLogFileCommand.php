@@ -41,18 +41,18 @@ class ParseLogFileCommand extends Command
         if ($fileExists) {
             $handle = fopen($logFile, 'r');
 
-            if (!$handle) {
+            if (! $handle) {
                 return 0;
             }
 
             $analytics = [];
 
-            while (!feof($handle)) {
+            while (! feof($handle)) {
                 $line = fgets($handle);
 
                 list($serviceName, $startDateAndTime, $statusCode) = $this->parseFileContent($line);
 
-                $analytics[] = (object)[
+                $analytics[] = (object) [
                     'service_name' => strtolower($serviceName),
                     'start_date'   => $startDateAndTime,
                     'end_date'     => $startDateAndTime,
@@ -60,9 +60,7 @@ class ParseLogFileCommand extends Command
                 ];
             }
 
-            foreach ($analytics as $data) {
-                $this->logService->store($data);
-            }
+            $this->logService->store($analytics);
         }
 
         $io->success('Log file parsed and inserted into database');

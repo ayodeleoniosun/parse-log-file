@@ -8,26 +8,35 @@ use Doctrine\Persistence\ManagerRegistry;
 
 class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalyticsRepositoryInterface
 {
-    private LogAnalytics $logAnalytics;
-
-    public function __construct(ManagerRegistry $registry, LogAnalytics $logAnalytics)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, LogAnalytics::class);
-        $this->logAnalytics = $logAnalytics;
     }
 
-    public function save(object $data): LogAnalytics
+    public function save(array $analytics): void
     {
-        $this->logAnalytics->setServiceName($data->service_name);
-        $this->logAnalytics->setStartDate($data->start_date);
-        $this->logAnalytics->setEndDate($data->end_date);
-        $this->logAnalytics->setStatusCode($data->status_code);
-        $this->logAnalytics->setCreatedAt($data->created_at);
-        $this->logAnalytics->setUpdatedAt($data->updated_at);
+        $batchSize = 20;
 
-        $this->persistDatabase($this->logAnalytics);
+        for ($i = 0; $i < count($analytics); $i++) {
+            $data = $analytics[$i];
 
-        return $this->find($this->logAnalytics->getId());
+            $logAnalytics = new LogAnalytics();
+
+            $logAnalytics->setServiceName($data->service_name);
+            $logAnalytics->setStartDate($data->start_date);
+            $logAnalytics->setEndDate($data->end_date);
+            $logAnalytics->setStatusCode($data->status_code);
+            $logAnalytics->setCreatedAt($data->created_at);
+            $logAnalytics->setUpdatedAt($data->updated_at);
+
+            $this->persist($logAnalytics);
+
+            if (($i % $batchSize) === 0) {
+                $this->flush();
+            }
+        }
+
+        $this->flush();
     }
 
     public function filter(?array $serviceNames, ?string $startDate, ?string $endDate, ?int $statusCode): array

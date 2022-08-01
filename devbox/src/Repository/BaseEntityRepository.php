@@ -19,9 +19,13 @@ abstract class BaseEntityRepository extends ServiceEntityRepository
         $this->entityManager = $this->getEntityManager();
     }
 
-    protected function persistDatabase($entity): void
+    protected function persist($entity): void
     {
         $this->entityManager->persist($entity);
+    }
+
+    protected function flush(): void
+    {
         $this->entityManager->flush();
     }
 }

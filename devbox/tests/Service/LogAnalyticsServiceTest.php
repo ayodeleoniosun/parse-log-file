@@ -9,9 +9,12 @@ use App\Service\LogAnalyticsService;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
+use Tests\Trait\LogAnalytics as LogAnalyticsTrait;
 
 class LogAnalyticsServiceTest extends KernelTestCase
 {
+    use LogAnalyticsTrait;
+
     private EntityManager $entityManager;
 
     private ?object $logService;
@@ -26,21 +29,9 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
     public function testStoreLogAnalytics(): void
     {
-        $dateTime = date('Y-m-d H:i:s');
-
-        $data = (object) [
-            'service_name' => 'user-service',
-            'start_date' => $dateTime,
-            'end_date' => $dateTime,
-            'status_code' => 201,
-        ];
-
-        $response = $this->logService->store($data);
-
-        $this->assertEquals($response->getServiceName(), $data->service_name);
-        $this->assertEquals($response->getStartDate(), $data->start_date);
-        $this->assertEquals($response->getEndDate(), $data->end_date);
-        $this->assertEquals($response->getStatusCode(), $data->status_code);
+        $analytics = $this->generateLogAnalytics('service');
+        $this->logService->store($analytics);
+        $this->assertTrue(true);
     }
 
     public function testFilterLogAnalytics(): void
@@ -54,8 +45,8 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
         $request->query->add([
             'serviceNames' => ['user-service', 'invoice-service'],
-            'statusCode' => 201,
-            'startDate' => $dateTime,
+            'statusCode'   => 201,
+            'startDate'    => $dateTime,
         ]);
 
         $response = $this->logService->filter($request);
