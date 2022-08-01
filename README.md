@@ -43,7 +43,8 @@ composer install
 
 #### Step 4: Setup environment variable
 
-- Copy `.env` to `.env.local` i.e `cp .env .env.local`
+- Copy `.env.example` to `.env.local` i.e `cp .env.example .env.local`
+- Copy `.env.example` to `.env` i.e `cp .env.example .env`
 - Update other variables as needed
 
 ### Step 5: Run database migrations
@@ -52,9 +53,9 @@ You can choose to run this app within or without docker container
 
 #### Running migrations without docker container
 
-By default, the value for `DATABASE_URL` in the `.env.local` and `env.test` file is for docker configurations.
+By default, the value for `DATABASE_URL` in the `.env.local`, `env.test` and `.env` file is for docker configurations.
 
-To run the migrations without docker, update the `DATABASE_URL` to this value in both `.env.local` and `.env.test`
+To run the migrations without docker, update the `DATABASE_URL` to this value in three `.env` files
 
 ```bash
 mysql://root:@127.0.0.1:3306/legal_one
