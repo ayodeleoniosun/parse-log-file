@@ -88,7 +88,7 @@ class LogAnalyticsControllerTest extends WebTestCase
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $this->dateTime . '&endDate=' . $this->dateTime);
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDateAndEndDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+        $countFilterAnalytics = $this->countFilterByAllCriteria($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);

@@ -52,7 +52,7 @@ trait LogAnalytics
         }));
     }
 
-    public function countFilterAnalyticsByServiceNameAndStatusCodeAndStartDateAndEndDate($analytics, array $serviceNames, int $statusCode, \DateTime $dateTime): int
+    public function countFilterByAllCriteria($analytics, array $serviceNames, int $statusCode, \DateTime $dateTime): int
     {
         return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode, $dateTime) {
             return in_array($data['service_name'], $serviceNames)

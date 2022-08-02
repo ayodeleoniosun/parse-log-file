@@ -56,13 +56,18 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
             ->getSingleScalarResult();
     }
 
-    public function filter(?array $serviceNames, ?string $startDate, ?string $endDate, ?int $statusCode): array
+    public function filter(?array $serviceNames, ?int $statusCode, ?string $startDate, ?string $endDate): array
     {
         $queryBuilder = $this->createQueryBuilder('log');
 
         if (count($serviceNames) > 0) {
             $queryBuilder->andWhere('log.service_name IN (:service_name)')
                 ->setParameter('service_name', $serviceNames);
+        }
+
+        if ($statusCode) {
+            $queryBuilder->andWhere('log.status_code = :status_code')
+                ->setParameter('status_code', $statusCode);
         }
 
         if ($startDate) {
@@ -73,11 +78,6 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         if ($endDate) {
             $queryBuilder->andWhere('log.end_date = :end_date')
                 ->setParameter('end_date', $endDate);
-        }
-
-        if ($statusCode) {
-            $queryBuilder->andWhere('log.status_code = :status_code')
-                ->setParameter('status_code', $statusCode);
         }
 
         return $queryBuilder->orderBy('log.id')->getQuery()->getArrayResult();

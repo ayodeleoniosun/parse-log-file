@@ -36,7 +36,7 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
         $endDate = $request->get('endDate') ?? null;
         $statusCode = (int)$request->get('statusCode') ?? null;
 
-        return $this->logRepo->filter($serviceNames, $startDate, $endDate, $statusCode);
+        return $this->logRepo->filter($serviceNames, $statusCode, $startDate, $endDate);
     }
 
     public function formatDate($date): \DateTime
