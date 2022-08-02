@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Service;
 
-use App\DataFixtures\LogAnalyticsFixture;
 use App\Service\LogAnalyticsService;
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -19,47 +18,119 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
     private ?object $logService;
 
+    private array $analytics;
+
+    private array $serviceNames;
+
+    private int $statusCode;
+
+    private string $dateTime;
+
+    private \DateTime $formattedDateTime;
+
     public function setUp(): void
     {
         self::bootKernel();
         $container = static::getContainer();
         $this->entityManager = $container->get('doctrine')->getManager();
+
+        $this->analytics = $this->generateLogAnalytics('service');
+        $this->serviceNames = ['user-service', 'invoice-service'];
+        $this->statusCode = 201;
+        $this->dateTime = date('Y-m-d H:i:s');
+        $this->formattedDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->dateTime);
+
+
         $this->logService = $container->get(LogAnalyticsService::class);
     }
 
     public function testStoreLogAnalytics(): void
     {
-        $analytics = $this->generateLogAnalytics('service');
-        $this->logService->store($analytics);
-        $this->assertTrue(true);
+        $countRecords = $this->logService->store($this->analytics);
+        $this->assertEquals(count($this->analytics), $countRecords);
     }
 
-    public function testFilterLogAnalytics(): void
+    public function testFilterAnalyticsByServiceNamesOnly(): void
     {
-        $dateTime = date('Y-m-d H:i:s');
+        $this->logService->store($this->analytics);
 
-        $fixture = new LogAnalyticsFixture();
-        $fixture->load($this->entityManager);
+        $request = new Request();
+        $request->query->add(['serviceNames' => $this->serviceNames]);
+
+        $response = $this->logService->filter($request);
+
+        $this->analytics = $this->formatAnalytics($this->analytics);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNamesOnly($this->analytics, $this->serviceNames);
+
+        $this->assertEquals($countFilterAnalytics, count($response));
+    }
+
+    public function testFilterAnalyticsByServiceNamesAndStatusCode(): void
+    {
+        $this->logService->store($this->analytics);
 
         $request = new Request();
 
         $request->query->add([
-            'serviceNames' => ['user-service', 'invoice-service'],
-            'statusCode'   => 201,
-            'startDate'    => $dateTime,
+            'serviceNames' => $this->serviceNames,
+            'statusCode'   => $this->statusCode
         ]);
 
         $response = $this->logService->filter($request);
-        $this->assertGreaterThan(0, count($response));
+
+        $this->analytics = $this->formatAnalytics($this->analytics);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode($this->analytics, $this->serviceNames, $this->statusCode);
+
+        $this->assertEquals($countFilterAnalytics, count($response));
     }
 
-    public function testFormatDate(): void
+    public function testFilterByServiceNamesAndStatusCodeAndStartDate(): void
     {
-        $dateTime = date('Y-m-d H:i:s');
-        $formattedDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
+        $this->logService->store($this->analytics);
 
-        $response = $this->logService->formatDate($dateTime);
+        $request = new Request();
 
-        $this->assertEquals($response, $formattedDateTime);
+        $request->query->add([
+            'serviceNames' => $this->serviceNames,
+            'statusCode'   => $this->statusCode,
+            'startDate'    => $this->dateTime
+        ]);
+
+        $response = $this->logService->filter($request);
+
+        $this->analytics = $this->formatAnalytics($this->analytics);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+
+        $this->assertEquals($countFilterAnalytics, count($response));
+    }
+
+    public function testFilterByAllCriteria(): void
+    {
+        $this->logService->store($this->analytics);
+
+        $request = new Request();
+
+        $request->query->add([
+            'serviceNames' => $this->serviceNames,
+            'statusCode'   => $this->statusCode,
+            'startDate'    => $this->dateTime,
+            'endDate'      => $this->dateTime
+        ]);
+
+        $response = $this->logService->filter($request);
+
+        $this->analytics = $this->formatAnalytics($this->analytics);
+        $countFilterAnalytics = $this->countFilterByAllCriteria($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+
+        $this->assertEquals($countFilterAnalytics, count($response));
+    }
+
+    public function formatAnalytics($analytics): array
+    {
+        array_walk($analytics, function (&$item) {
+            $item = (array)$item;
+        });
+
+        return $analytics;
     }
 }

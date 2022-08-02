@@ -44,11 +44,10 @@ class LogAnalyticsRepositoryTest extends KernelTestCase
 
     public function testSaveLogAnalytics(): void
     {
-        $records = 20;
-        $analytics = $this->generateLogAnalytics('repository', $records);
-        $countInserted = $this->logRepo->save($analytics);
+        $analytics = $this->generateLogAnalytics();
+        $countRecords = $this->logRepo->save($analytics);
 
-        $this->assertEquals($records, $countInserted);
+        $this->assertEquals(count($analytics), $countRecords);
     }
 
     public function testFilterAnalyticsByServiceNamesOnly(): void
