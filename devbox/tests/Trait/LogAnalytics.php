@@ -15,7 +15,7 @@ trait LogAnalytics
             $serviceNameKey = array_rand($serviceNames);
             $codeKey = array_rand($statusCodes);
 
-            $data[] = (object)[
+            $data[] = (object) [
                 'service_name' => $serviceNames[$serviceNameKey],
                 'start_date'   => $dateTime,
                 'end_date'     => $dateTime,
@@ -28,23 +28,30 @@ trait LogAnalytics
         return $data;
     }
 
-    public function countFilterAnalyticsByServiceNamesOnly($analytics, array $serviceNames): int
+    public function countFilterAnalyticsByServiceNamesOnly(array $analytics, array $serviceNames): int
     {
         return count(array_filter($analytics, function ($data) use ($serviceNames) {
             return in_array($data['service_name'], $serviceNames);
         }));
     }
 
-    public function countFilterAnalyticsByServiceNameAndStatusCode($analytics, array $serviceNames, int $statusCode): int
-    {
+    public function countFilterAnalyticsByServiceNameAndStatusCode(
+        array $analytics,
+        array $serviceNames,
+        int $statusCode
+    ): int {
         return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode) {
             return in_array($data['service_name'], $serviceNames)
                 && $data['status_code'] === $statusCode;
         }));
     }
 
-    public function countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($analytics, array $serviceNames, int $statusCode, \DateTime $dateTime): int
-    {
+    public function countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate(
+        array $analytics,
+        array $serviceNames,
+        int $statusCode,
+        \DateTime $dateTime
+    ): int {
         return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode, $dateTime) {
             return in_array($data['service_name'], $serviceNames)
                 && $data['status_code'] === $statusCode
@@ -52,8 +59,12 @@ trait LogAnalytics
         }));
     }
 
-    public function countFilterByAllCriteria($analytics, array $serviceNames, int $statusCode, \DateTime $dateTime): int
-    {
+    public function countFilterByAllCriteria(
+        array $analytics,
+        array $serviceNames,
+        int $statusCode,
+        \DateTime $dateTime
+    ): int {
         return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode, $dateTime) {
             return in_array($data['service_name'], $serviceNames)
                 && $data['status_code'] === $statusCode

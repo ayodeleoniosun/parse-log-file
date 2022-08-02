@@ -40,7 +40,6 @@ class LogAnalyticsServiceTest extends KernelTestCase
         $this->dateTime = date('Y-m-d H:i:s');
         $this->formattedDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->dateTime);
 
-
         $this->logService = $container->get(LogAnalyticsService::class);
     }
 
@@ -60,6 +59,7 @@ class LogAnalyticsServiceTest extends KernelTestCase
         $response = $this->logService->filter($request);
 
         $this->analytics = $this->formatAnalytics($this->analytics);
+
         $countFilterAnalytics = $this->countFilterAnalyticsByServiceNamesOnly($this->analytics, $this->serviceNames);
 
         $this->assertEquals($countFilterAnalytics, count($response));
@@ -73,13 +73,18 @@ class LogAnalyticsServiceTest extends KernelTestCase
 
         $request->query->add([
             'serviceNames' => $this->serviceNames,
-            'statusCode'   => $this->statusCode
+            'statusCode'   => $this->statusCode,
         ]);
 
         $response = $this->logService->filter($request);
 
         $this->analytics = $this->formatAnalytics($this->analytics);
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode($this->analytics, $this->serviceNames, $this->statusCode);
+
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode
+        );
 
         $this->assertEquals($countFilterAnalytics, count($response));
     }
@@ -93,13 +98,19 @@ class LogAnalyticsServiceTest extends KernelTestCase
         $request->query->add([
             'serviceNames' => $this->serviceNames,
             'statusCode'   => $this->statusCode,
-            'startDate'    => $this->dateTime
+            'startDate'    => $this->dateTime,
         ]);
 
         $response = $this->logService->filter($request);
 
         $this->analytics = $this->formatAnalytics($this->analytics);
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode,
+            $this->formattedDateTime
+        );
 
         $this->assertEquals($countFilterAnalytics, count($response));
     }
@@ -114,13 +125,19 @@ class LogAnalyticsServiceTest extends KernelTestCase
             'serviceNames' => $this->serviceNames,
             'statusCode'   => $this->statusCode,
             'startDate'    => $this->dateTime,
-            'endDate'      => $this->dateTime
+            'endDate'      => $this->dateTime,
         ]);
 
         $response = $this->logService->filter($request);
 
         $this->analytics = $this->formatAnalytics($this->analytics);
-        $countFilterAnalytics = $this->countFilterByAllCriteria($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+
+        $countFilterAnalytics = $this->countFilterByAllCriteria(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode,
+            $this->formattedDateTime
+        );
 
         $this->assertEquals($countFilterAnalytics, count($response));
     }
@@ -128,7 +145,7 @@ class LogAnalyticsServiceTest extends KernelTestCase
     public function formatAnalytics($analytics): array
     {
         array_walk($analytics, function (&$item) {
-            $item = (array)$item;
+            $item = (array) $item;
         });
 
         return $analytics;

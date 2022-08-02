@@ -25,8 +25,11 @@ class ParseLogFileCommand extends Command
 
     private ParseLogFile $parseLogFile;
 
-    public function __construct(KernelInterface $kernel, LogAnalyticsServiceInterface $logService, ParseLogFile $parseLogFile)
-    {
+    public function __construct(
+        KernelInterface $kernel,
+        LogAnalyticsServiceInterface $logService,
+        ParseLogFile $parseLogFile
+    ) {
         parent::__construct();
         $this->resourceDir = $kernel->getResourceDir();
         $this->filesystem = new Filesystem();
@@ -39,16 +42,17 @@ class ParseLogFileCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $logFile = $this->resourceDir . '/logs.txt';
-        $fileExists = $this->filesystem->exists($logFile);
 
-        $countInsertedRecords = 0;
+        $analytics = [];
+        $content = $this->parseLogFile->getLogContent($logFile, $analytics);
 
-        if ($fileExists) {
-            $analytics = [];
-            $content = $this->parseLogFile->getLogContent($logFile, $analytics);
-            $countInsertedRecords = $this->logService->store($content);
+        if (count($content) == 0) {
+            $io->error('File not parsed. Check if file exists.');
+
+            return Command::FAILURE;
         }
 
+        $countInsertedRecords = $this->logService->store($content);
         $io->success("Log file parsed and $countInsertedRecords records were inserted into database");
 
         return Command::SUCCESS;

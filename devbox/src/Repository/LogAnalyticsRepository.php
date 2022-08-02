@@ -56,8 +56,12 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
             ->getSingleScalarResult();
     }
 
-    public function filter(?array $serviceNames, ?int $statusCode, ?string $startDate, ?string $endDate): array
-    {
+    public function filter(
+        ?array $serviceNames,
+        ?int $statusCode,
+        ?string $startDate,
+        ?string $endDate
+    ): array {
         $queryBuilder = $this->createQueryBuilder('log');
 
         if (count($serviceNames) > 0) {

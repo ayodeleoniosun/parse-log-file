@@ -66,7 +66,11 @@ class LogAnalyticsControllerTest extends WebTestCase
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200');
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode($this->analytics, $this->serviceNames, $this->statusCode);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode
+        );
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);
@@ -77,7 +81,12 @@ class LogAnalyticsControllerTest extends WebTestCase
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $this->dateTime);
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode,
+            $this->formattedDateTime
+        );
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);
@@ -88,7 +97,12 @@ class LogAnalyticsControllerTest extends WebTestCase
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $this->dateTime . '&endDate=' . $this->dateTime);
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = $this->countFilterByAllCriteria($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+        $countFilterAnalytics = $this->countFilterByAllCriteria(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode,
+            $this->formattedDateTime
+        );
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);

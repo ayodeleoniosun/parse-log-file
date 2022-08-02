@@ -63,7 +63,11 @@ class LogAnalyticsRepositoryTest extends KernelTestCase
     {
         $response = $this->logRepo->filter($this->serviceNames, $this->statusCode, null, null);
 
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode($this->analytics, $this->serviceNames, $this->statusCode);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode
+        );
 
         $this->assertEquals($countFilterAnalytics, count($response));
     }
@@ -72,7 +76,12 @@ class LogAnalyticsRepositoryTest extends KernelTestCase
     {
         $response = $this->logRepo->filter($this->serviceNames, $this->statusCode, $this->dateTime, null);
 
-        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode,
+            $this->formattedDateTime
+        );
 
         $this->assertEquals($countFilterAnalytics, count($response));
     }
@@ -81,7 +90,12 @@ class LogAnalyticsRepositoryTest extends KernelTestCase
     {
         $response = $this->logRepo->filter($this->serviceNames, $this->statusCode, $this->dateTime, $this->dateTime);
 
-        $countFilterAnalytics = $this->countFilterByAllCriteria($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
+        $countFilterAnalytics = $this->countFilterByAllCriteria(
+            $this->analytics,
+            $this->serviceNames,
+            $this->statusCode,
+            $this->formattedDateTime
+        );
 
         $this->assertEquals($countFilterAnalytics, count($response));
     }

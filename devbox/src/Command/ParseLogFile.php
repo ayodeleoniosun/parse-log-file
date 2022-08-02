@@ -19,18 +19,24 @@ class ParseLogFile
 
     public function getLogContent($file, array &$analytics): array
     {
-        $handle = fopen($file, 'r');
+        $fileExists = $this->filesystem->exists($file);
 
-        if (!$handle) {
+        if (! $fileExists) {
             return [];
         }
 
-        while (!feof($handle)) {
+        $handle = fopen($file, 'r');
+
+        if (! $handle) {
+            return [];
+        }
+
+        while (! feof($handle)) {
             $line = fgets($handle);
 
             list($serviceName, $startDateAndTime, $statusCode) = $this->parseFileContent($line);
 
-            $analytics[] = (object)[
+            $analytics[] = (object) [
                 'service_name' => strtolower($serviceName),
                 'start_date'   => $startDateAndTime,
                 'end_date'     => $startDateAndTime,
@@ -45,6 +51,7 @@ class ParseLogFile
     {
         // split each line by - - and get the array elements
         $splitLine = explode('- -', $line);
+
         list($serviceName, $others) = array_map('trim', $splitLine);
 
         // split others (everything after the service name) and get their individual elements
