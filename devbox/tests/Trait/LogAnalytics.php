@@ -27,4 +27,38 @@ trait LogAnalytics
 
         return $data;
     }
+
+    public function countFilterAnalyticsByServiceNamesOnly($analytics, array $serviceNames): int
+    {
+        return count(array_filter($analytics, function ($data) use ($serviceNames) {
+            return in_array($data['service_name'], $serviceNames);
+        }));
+    }
+
+    public function countFilterAnalyticsByServiceNameAndStatusCode($analytics, array $serviceNames, int $statusCode): int
+    {
+        return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode) {
+            return in_array($data['service_name'], $serviceNames)
+                && $data['status_code'] === $statusCode;
+        }));
+    }
+
+    public function countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($analytics, array $serviceNames, int $statusCode, \DateTime $dateTime): int
+    {
+        return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode, $dateTime) {
+            return in_array($data['service_name'], $serviceNames)
+                && $data['status_code'] === $statusCode
+                && $data['start_date'] == $dateTime;
+        }));
+    }
+
+    public function countFilterAnalyticsByServiceNameAndStatusCodeAndStartDateAndEndDate($analytics, array $serviceNames, int $statusCode, \DateTime $dateTime): int
+    {
+        return count(array_filter($analytics, function ($data) use ($serviceNames, $statusCode, $dateTime) {
+            return in_array($data['service_name'], $serviceNames)
+                && $data['status_code'] === $statusCode
+                && $data['start_date'] == $dateTime
+                && $data['end_date'] == $dateTime;
+        }));
+    }
 }

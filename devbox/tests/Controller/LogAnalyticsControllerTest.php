@@ -7,14 +7,25 @@ namespace Tests\Controller;
 use App\DataFixtures\LogAnalyticsFixture;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\Trait\LogAnalytics as LogAnalyticsTrait;
 
 class LogAnalyticsControllerTest extends WebTestCase
 {
+    use LogAnalyticsTrait;
+
     private KernelBrowser $client;
 
     private $entityManager;
 
     private array $analytics;
+
+    private array $serviceNames;
+
+    private int $statusCode;
+
+    private string $dateTime;
+
+    private \DateTime $formattedDateTime;
 
     public function setUp(): void
     {
@@ -24,6 +35,10 @@ class LogAnalyticsControllerTest extends WebTestCase
 
         $fixture = new LogAnalyticsFixture();
         $this->analytics = $fixture->load($this->entityManager);
+        $this->serviceNames = ['user-service', 'invoice-service'];
+        $this->statusCode = 200;
+        $this->dateTime = date('Y-m-d H:i:s');
+        $this->formattedDateTime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->dateTime);
     }
 
     public function testRetrieveAllLogAnalytics(): void
@@ -40,9 +55,7 @@ class LogAnalyticsControllerTest extends WebTestCase
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service');
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = count(array_filter($this->analytics, function ($analytics) {
-            return in_array($analytics['service_name'], ['user-service', 'invoice-service']);
-        }));
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNamesOnly($this->analytics, $this->serviceNames);
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);
@@ -53,10 +66,7 @@ class LogAnalyticsControllerTest extends WebTestCase
         $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200');
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = count(array_filter($this->analytics, function ($analytics) {
-            return in_array($analytics['service_name'], ['user-service', 'invoice-service'])
-                && $analytics['status_code'] === 200;
-        }));
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCode($this->analytics, $this->serviceNames, $this->statusCode);
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);
@@ -64,17 +74,10 @@ class LogAnalyticsControllerTest extends WebTestCase
 
     public function testFilterByServiceNamesAndStatusCodeAndStartDate(): void
     {
-        $dateTime = date('Y-m-d H:i:s');
-
-        $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $dateTime);
+        $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $this->dateTime);
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = count(array_filter($this->analytics, function ($analytics) use ($dateTime) {
-            return
-                in_array($analytics['service_name'], ['user-service', 'invoice-service'])
-                && $analytics['status_code'] === 200
-                && $analytics['start_date'] == \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
-        }));
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);
@@ -82,18 +85,10 @@ class LogAnalyticsControllerTest extends WebTestCase
 
     public function testFilterByAllCriteria(): void
     {
-        $dateTime = date('Y-m-d H:i:s');
-
-        $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $dateTime . '&endDate=' . $dateTime);
+        $this->client->request('GET', '/count?serviceNames[]=user-service&serviceNames[]=invoice-service&statusCode=200&startDate=' . $this->dateTime . '&endDate=' . $this->dateTime);
         $content = json_decode($this->client->getResponse()->getContent());
 
-        $countFilterAnalytics = count(array_filter($this->analytics, function ($analytics) use ($dateTime) {
-            return
-                in_array($analytics['service_name'], ['user-service', 'invoice-service'])
-                && $analytics['status_code'] === 200
-                && $analytics['start_date'] == \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime)
-                && $analytics['end_date'] == \DateTime::createFromFormat('Y-m-d H:i:s', $dateTime);
-        }));
+        $countFilterAnalytics = $this->countFilterAnalyticsByServiceNameAndStatusCodeAndStartDateAndEndDate($this->analytics, $this->serviceNames, $this->statusCode, $this->formattedDateTime);
 
         $this->assertResponseIsSuccessful();
         $this->assertEquals($countFilterAnalytics, $content->counter);
