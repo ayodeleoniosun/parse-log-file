@@ -15,7 +15,7 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
         $this->logRepo = $logRepo;
     }
 
-    public function store(array $analytics): void
+    public function store(array $analytics): int
     {
         $allAnalytics = array_map(function ($data) {
             $data->start_date = $this->formatDate($data->start_date);
@@ -26,15 +26,15 @@ class LogAnalyticsService implements LogAnalyticsServiceInterface
             return $data;
         }, $analytics);
 
-        $this->logRepo->save($allAnalytics);
+        return $this->logRepo->save($allAnalytics);
     }
 
     public function filter(Request $request): array
     {
-        $serviceNames = (array) $request->get('serviceNames') ?? null;
+        $serviceNames = (array)$request->get('serviceNames') ?? null;
         $startDate = $request->get('startDate') ?? null;
         $endDate = $request->get('endDate') ?? null;
-        $statusCode = (int) $request->get('statusCode') ?? null;
+        $statusCode = (int)$request->get('statusCode') ?? null;
 
         return $this->logRepo->filter($serviceNames, $startDate, $endDate, $statusCode);
     }

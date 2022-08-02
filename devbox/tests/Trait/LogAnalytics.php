@@ -4,18 +4,18 @@ namespace Tests\Trait;
 
 trait LogAnalytics
 {
-    public function generateLogAnalytics($type): array
+    public function generateLogAnalytics(string $type = 'repository', int $records = 20): array
     {
         $dateTime = $type === 'repository' ? new \DateTime('now') : date('Y-m-d H:i:s');
         $serviceNames = ['user-service', 'invoice-service'];
         $statusCodes = [200, 201, 500];
         $data = [];
 
-        for ($i = 1; $i <= 20; $i++) {
+        for ($i = 1; $i <= $records; $i++) {
             $serviceNameKey = array_rand($serviceNames);
             $codeKey = array_rand($statusCodes);
 
-            $data[] = (object) [
+            $data[] = (object)[
                 'service_name' => $serviceNames[$serviceNameKey],
                 'start_date'   => $dateTime,
                 'end_date'     => $dateTime,

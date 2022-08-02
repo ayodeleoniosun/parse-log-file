@@ -13,8 +13,18 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         parent::__construct($registry, LogAnalytics::class);
     }
 
-    public function save(array $analytics): void
+    public function save(array $analytics): int
     {
+        $queryBuilder = $this->createQueryBuilder('log')->orderBy('log.id', 'DESC');
+        $allAnalytics = $queryBuilder->getQuery()->getArrayResult();
+
+        if (count($allAnalytics) == 0) {
+            $insertions = 1;
+        } else {
+            $lastAnalytics = $queryBuilder->setMaxResults(1)->getQuery()->getArrayResult();
+            $insertions = $lastAnalytics[0]['insertions'] + 1;
+        }
+
         $batchSize = 20;
 
         for ($i = 0; $i < count($analytics); $i++) {
@@ -28,6 +38,7 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
             $logAnalytics->setStatusCode($data->status_code);
             $logAnalytics->setCreatedAt($data->created_at);
             $logAnalytics->setUpdatedAt($data->updated_at);
+            $logAnalytics->setInsertions($insertions);
 
             $this->persist($logAnalytics);
 
@@ -37,6 +48,12 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
         }
 
         $this->flush();
+
+        return $queryBuilder->select('count(log.id)')
+            ->where('log.insertions = :insertions')
+            ->setParameter('insertions', $insertions)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function filter(?array $serviceNames, ?string $startDate, ?string $endDate, ?int $statusCode): array

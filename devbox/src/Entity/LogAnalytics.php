@@ -32,6 +32,9 @@ class LogAnalytics
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated_at = null;
 
+    #[ORM\Column]
+    private ?int $insertions = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +108,18 @@ class LogAnalytics
     public function setUpdatedAt(\DateTimeInterface $updated_at): self
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getInsertions(): ?int
+    {
+        return $this->insertions;
+    }
+
+    public function setInsertions(int $insertions): self
+    {
+        $this->insertions = $insertions;
 
         return $this;
     }

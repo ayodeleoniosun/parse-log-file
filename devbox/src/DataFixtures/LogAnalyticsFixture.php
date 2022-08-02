@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class LogAnalyticsFixture extends Fixture
 {
-    public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): array
     {
         $dateTime = new \DateTime('now');
 
@@ -26,10 +26,20 @@ class LogAnalyticsFixture extends Fixture
             $logAnalytics->setStatusCode($statusCodes[$codeKey]);
             $logAnalytics->setCreatedAt($dateTime);
             $logAnalytics->setUpdatedAt($dateTime);
+            $logAnalytics->setInsertions(1);
 
             $manager->persist($logAnalytics);
         }
 
         $manager->flush();
+
+        $repository = $manager->getRepository(LogAnalytics::class);
+
+        $queryBuilder = $repository->createQueryBuilder('log')->orderBy('log.id', 'DESC');
+
+        return $queryBuilder->where('log.insertions = :insertions')
+            ->setParameter('insertions', 1)
+            ->getQuery()
+            ->getArrayResult();
     }
 }
