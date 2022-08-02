@@ -38,21 +38,23 @@ class ParseLogFileCommand extends Command
         $logFile = $this->resourceDir . '/logs.txt';
         $fileExists = $this->filesystem->exists($logFile);
 
+        $countInsertedRecords = 0;
+
         if ($fileExists) {
             $handle = fopen($logFile, 'r');
 
-            if (! $handle) {
+            if (!$handle) {
                 return 0;
             }
 
             $analytics = [];
 
-            while (! feof($handle)) {
+            while (!feof($handle)) {
                 $line = fgets($handle);
 
                 list($serviceName, $startDateAndTime, $statusCode) = $this->parseFileContent($line);
 
-                $analytics[] = (object) [
+                $analytics[] = (object)[
                     'service_name' => strtolower($serviceName),
                     'start_date'   => $startDateAndTime,
                     'end_date'     => $startDateAndTime,
@@ -60,10 +62,10 @@ class ParseLogFileCommand extends Command
                 ];
             }
 
-            $this->logService->store($analytics);
+            $countInsertedRecords = $this->logService->store($analytics);
         }
 
-        $io->success('Log file parsed and inserted into database');
+        $io->success("Log file parsed and $countInsertedRecords records were inserted into database");
 
         return Command::SUCCESS;
     }
