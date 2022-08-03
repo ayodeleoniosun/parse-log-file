@@ -99,9 +99,9 @@ jobs:
           php bin/console doctrine:schema:update --env=test --force || echo "No migrations found or schema update failed"
           php bin/console doctrine:fixtures:load --env=test --no-interaction
         env:
-          DATABASE_URL: mysql://root:legal_one@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one
+          DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one_test
 
       - name: Execute tests
         run: php bin/phpunit
         env:
-          DATABASE_URL: mysql://root:legal_one@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one
+          DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one_test
