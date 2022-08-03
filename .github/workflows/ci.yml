@@ -97,7 +97,7 @@ jobs:
           php bin/console doctrine:database:create --if-not-exists --env=test
           php bin/console doctrine:schema:update --env=test --force || echo "No migrations found or schema update failed"
         env:
-          DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one_test
+          DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one
 
       - name: actions-setup-redis
         uses: shogo82148/actions-setup-redis@v1.19.0
@@ -105,4 +105,4 @@ jobs:
       - name: Execute tests
         run: php bin/phpunit
         env:
-          DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one_test
+          DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one
