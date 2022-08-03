@@ -18,6 +18,7 @@ running are as follows:
 - PHP 8.1+
 - Docker (If preferred)
 - MySQL
+- redis
 - git
 - Composer
 
@@ -108,12 +109,24 @@ docker-compose up --build
 make run && make install
 ```
 
-After running the above commands, the app will start running on port `9002` and the database would be created as well
+After running the above commands, the app will start running on port `9002`
 
 #### Enter container CLI to run commands
 
 ```bash
 make enter
+```
+
+#### Create database
+
+```bash
+php bin/console doctrine:database:create
+```
+
+#### Create database for testing
+
+```bash
+php bin/console doctrine:database:create --env=test
 ```
 
 #### Run migrations
