@@ -21,7 +21,7 @@ class RedisService implements RedisServiceInterface
 
         $this->redis = new Client([
             'host' => $this->redisHost,
-            'port' => $this->redisPort
+            'port' => $this->redisPort,
         ]);
     }
 

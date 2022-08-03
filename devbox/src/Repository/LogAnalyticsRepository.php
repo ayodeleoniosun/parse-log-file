@@ -50,12 +50,11 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
     }
 
     public function filter(
-        ?array  $serviceNames,
-        ?int    $statusCode,
+        ?array $serviceNames,
+        ?int $statusCode,
         ?string $startDate,
         ?string $endDate
-    ): array
-    {
+    ): array {
         $queryBuilder = $this->createQueryBuilder('log');
 
         if (count($serviceNames) > 0) {

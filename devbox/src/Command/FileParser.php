@@ -39,7 +39,7 @@ class FileParser
 
     public function getFileLastLine(string $hash): int
     {
-        return (int)$this->redis->get($hash);
+        return (int) $this->redis->get($hash);
     }
 
     public function setFileLastLine(string $hash, int $line): void
@@ -71,8 +71,9 @@ class FileParser
     {
         $fileExists = $this->filesystem->exists($this->filePath);
 
-        if (!$fileExists) {
+        if (! $fileExists) {
             yield [];
+
             return;
         }
 
@@ -80,14 +81,15 @@ class FileParser
         $fileHash = $this->getFileNameHash($this->filePath);
         $lastLine = $this->getFileLastLine($fileHash);
 
-        if (!$handle) {
+        if (! $handle) {
             yield [];
+
             return;
         }
 
         $analytics = [];
 
-        while (!feof($handle)) {
+        while (! feof($handle)) {
             $this->currentLine++;
 
             if ($this->currentLine < $lastLine) {
@@ -96,7 +98,7 @@ class FileParser
 
             $line = fgets($handle);
 
-            $analytics[] = (object)$this->parseLineContent($line);
+            $analytics[] = (object) $this->parseLineContent($line);
 
 //            if (count($analytics) >= $batchLength) {
 //                //yield $analytics;

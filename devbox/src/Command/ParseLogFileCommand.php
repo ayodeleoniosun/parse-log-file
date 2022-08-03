@@ -28,11 +28,10 @@ class ParseLogFileCommand extends Command
     protected $io;
 
     public function __construct(
-        KernelInterface              $kernel,
+        KernelInterface $kernel,
         LogAnalyticsServiceInterface $logService,
-        FileParser                   $fileParser
-    )
-    {
+        FileParser $fileParser
+    ) {
         parent::__construct();
         $this->resourceDir = $kernel->getResourceDir();
         $this->filesystem = new Filesystem();
@@ -50,8 +49,9 @@ class ParseLogFileCommand extends Command
 
         $fileExists = $this->filesystem->exists($logFile);
 
-        if (!$fileExists) {
+        if (! $fileExists) {
             $this->io->error('File not found.');
+
             return Command::FAILURE;
         }
 
@@ -69,6 +69,4 @@ class ParseLogFileCommand extends Command
 
         return Command::SUCCESS;
     }
-
-
 }
