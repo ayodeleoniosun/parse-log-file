@@ -9,7 +9,7 @@ It was implemented using Repository pattern.
 - Development Requirements
 - Installation
 - Starting Development Server
-- Documentation
+- Import
 - Testing
 
 ## Development Requirements
@@ -161,9 +161,13 @@ Development server can be started in two ways:
 I recommend using docker to start the development server to ensure that the application works perfectly across all
 developers' machines regardless of their operating systems.
 
-### API Documentation
+### Testing
 
-Kindly refer to the documentation here to test the `count` endpoint
+The command that parse the file and insert the record to the database is as follow:
+
+```bash
+php bin/console app:parse-log-file
+```
 
 ### Testing
 
