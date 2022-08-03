@@ -23,38 +23,52 @@ class ParseLogFileCommand extends Command
 
     private LogAnalyticsServiceInterface $logService;
 
-    private ParseLogFile $parseLogFile;
+    private FileParser $fileParser;
+
+    protected $io;
 
     public function __construct(
-        KernelInterface $kernel,
+        KernelInterface              $kernel,
         LogAnalyticsServiceInterface $logService,
-        ParseLogFile $parseLogFile
-    ) {
+        FileParser                   $fileParser
+    )
+    {
         parent::__construct();
         $this->resourceDir = $kernel->getResourceDir();
         $this->filesystem = new Filesystem();
-        $this->parseLogFile = $parseLogFile;
+        $this->fileParser = $fileParser;
         $this->logService = $logService;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $io = new SymfonyStyle($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
+        $this->io->info('Parsing file ...');
 
         $logFile = $this->resourceDir . '/logs.txt';
+        $fileHash = $this->fileParser->getFileNameHash($logFile);
 
-        $analytics = [];
-        $content = $this->parseLogFile->getLogContent($logFile, $analytics);
+        $fileExists = $this->filesystem->exists($logFile);
 
-        if (count($content) == 0) {
-            $io->error('File not parsed. Check if file exists.');
-
+        if (!$fileExists) {
+            $this->io->error('File not found.');
             return Command::FAILURE;
         }
 
-        $countInsertedRecords = $this->logService->store($content);
-        $io->success("Log file parsed and $countInsertedRecords records were inserted into database");
+        $analytics = [];
+        $this->fileParser->setFilePath($logFile);
+
+        $countInsertedRecords = 0;
+
+        foreach ($this->fileParser->getLogContent($analytics) as $data) {
+            $countInsertedRecords += $this->logService->store($data);
+            $this->fileParser->setFileLastLine($fileHash, $countInsertedRecords);
+        }
+
+        $this->io->success("Log file parsed and $countInsertedRecords records were inserted into database");
 
         return Command::SUCCESS;
     }
+
+
 }

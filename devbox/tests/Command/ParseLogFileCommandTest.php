@@ -2,7 +2,9 @@
 
 namespace Tests\Command;
 
-use App\Command\ParseLogFile;
+use App\Command\FileParser;
+use App\Service\Interfaces\RedisServiceInterface;
+use App\Service\RedisService;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -11,43 +13,26 @@ class ParseLogFileCommandTest extends KernelTestCase
 {
     protected Application $application;
 
-    private ParseLogFile $parseLogFile;
+    private FileParser $fileParser;
 
     private string $resourceDir;
 
     public function setUp(): void
     {
         $kernel = self::bootKernel();
+        $container = static::getContainer();
         $this->application = new Application($kernel);
         $this->resourceDir = $kernel->getResourceDir();
-        $this->parseLogFile = new ParseLogFile($kernel);
-    }
 
-    public function testInvalidLogFile()
-    {
-        $content = count($this->getLogLines(false));
-        $this->assertEquals(0, $content);
-    }
+        $redis = $this->createMock(RedisServiceInterface::class);
+        $this->redisService = $container->get(RedisService::class);
 
-    public function testGetValidLogFileContent()
-    {
-        $content = count($this->getLogLines());
-        $this->assertEquals(20, $content); //assuming that the number of lines in the test log file is 20
-    }
-
-    public function testParseFile()
-    {
-        $content = $this->getLogLines();
-
-        $this->assertNotEmpty($content[0]->service_name);
-        $this->assertNotEmpty($content[0]->start_date);
-        $this->assertNotEmpty($content[0]->end_date);
-        $this->assertNotEmpty($content[0]->status_code);
+        $this->fileParser = new FileParser($kernel, $redis);
     }
 
     public function testExecute()
     {
-        $content = count($this->getLogLines());
+        $content = $this->countLogLines();
 
         $command = $this->application->find('app:parse-log-file');
         $commandTester = new CommandTester($command);
@@ -59,11 +44,19 @@ class ParseLogFileCommandTest extends KernelTestCase
         $this->assertStringContainsString("Log file parsed and $content records were inserted into database", $output);
     }
 
-    private function getLogLines(bool $isValid = true): array
+    private function countLogLines(): int
     {
-        $logFile = $isValid ? $this->resourceDir . '/logs.txt' : $this->resourceDir . '/log.txt';
+        $logFile = $this->resourceDir . '/logs.txt';
+        $this->fileParser->setFilePath($logFile);
+
         $analytics = [];
 
-        return $this->parseLogFile->getLogContent($logFile, $analytics);
+        $count = 0;
+
+        foreach ($this->fileParser->getLogContent($analytics) as $contents) {
+            $count = count($contents);
+        }
+
+        return $count;
     }
 }

@@ -25,8 +25,6 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
             $insertions = $lastAnalytics[0]['insertions'] + 1;
         }
 
-        $batchSize = 20;
-
         for ($i = 0; $i < count($analytics); $i++) {
             $data = $analytics[$i];
 
@@ -41,13 +39,8 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
             $logAnalytics->setInsertions($insertions);
 
             $this->persist($logAnalytics);
-
-            if (($i % $batchSize) === 0) {
-                $this->flush();
-            }
+            $this->flush();
         }
-
-        $this->flush();
 
         return $queryBuilder->select('count(log.id)')
             ->where('log.insertions = :insertions')
@@ -57,11 +50,12 @@ class LogAnalyticsRepository extends BaseEntityRepository implements LogAnalytic
     }
 
     public function filter(
-        ?array $serviceNames,
-        ?int $statusCode,
+        ?array  $serviceNames,
+        ?int    $statusCode,
         ?string $startDate,
         ?string $endDate
-    ): array {
+    ): array
+    {
         $queryBuilder = $this->createQueryBuilder('log');
 
         if (count($serviceNames) > 0) {
