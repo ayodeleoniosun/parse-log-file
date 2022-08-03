@@ -28,9 +28,9 @@ class ParseLogFileCommand extends Command
     protected $io;
 
     public function __construct(
-        KernelInterface $kernel,
+        KernelInterface              $kernel,
         LogAnalyticsServiceInterface $logService,
-        FileParser $fileParser
+        FileParser                   $fileParser
     ) {
         parent::__construct();
         $this->resourceDir = $kernel->getResourceDir();
@@ -49,7 +49,7 @@ class ParseLogFileCommand extends Command
 
         $fileExists = $this->filesystem->exists($logFile);
 
-        if (! $fileExists) {
+        if (!$fileExists) {
             $this->io->error('File not found.');
 
             return Command::FAILURE;
@@ -69,4 +69,11 @@ class ParseLogFileCommand extends Command
 
         return Command::SUCCESS;
     }
+
+    /*
+        Assumptions
+        1. File content are not edited randomly
+        2. Insertions are sequentials
+        3. New logs are appended to file from the bottom
+    */
 }
