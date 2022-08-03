@@ -1,5 +1,5 @@
 # Development docker-compose.yml
-version: '3.5'
+version: "3.5"
 
 services:
     devbox:
@@ -31,22 +31,35 @@ services:
             APP_SECRET: ${APP_SECRET}
         env_file:
             - .env
-            - .env.local
         depends_on:
             - mysql
+            - redis
 
     mysql:
-        image: mysql:8.0
+        image: mysql:latest
         container_name: devbox-mysql
         restart: always
         environment:
             MYSQL_ROOT_PASSWORD: ${DATABASE_ROOT_PASSWORD}
+            MYSQL_ROOT_USER: root
             MYSQL_DATABASE: ${DATABASE_NAME}
         ports:
             - "3308:3306"
         volumes:
             - database-volume:/var/lib/mysql
 
+    redis:
+        image: redis:7.0.4-alpine
+        container_name: devbox-redis
+        command: redis-server --save 20 1 --loglevel warning
+        ports:
+            - "6379:6379"
+        restart: always
+        volumes:
+            - cache-volume:/data
+
 volumes:
     database-volume:
+        driver: "local"
+    cache-volume:
         driver: "local"

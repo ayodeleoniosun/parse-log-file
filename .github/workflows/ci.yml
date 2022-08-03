@@ -39,7 +39,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+          php -r "file_exists('.env.local') || copy('.env.test', '.env.local');"
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Run static analysis
@@ -59,7 +59,7 @@ jobs:
         image: mysql:5.7
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
-          MYSQL_ROOT_PASSWORD: legal_one
+          MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: legal_one
         ports:
           - 3306/tcp
