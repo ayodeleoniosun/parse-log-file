@@ -60,11 +60,11 @@ jobs:
         env:
           MYSQL_ALLOW_EMPTY_PASSWORD: false
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: legal_one
+          MYSQL_DATABASE: legal_one_test
         ports:
           - 3306/tcp
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-
+      
     defaults:
       run:
         working-directory: ${{ env.directory }}
@@ -77,6 +77,7 @@ jobs:
           extensions: mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, iconv, json, mbstring, mysqli
 
       - uses: actions/checkout@v3
+      - run: mysql -h 127.0.0.1 --port 3308 -u root -password -e 'CREATE DATABASE IF NOT EXISTS legal_one_test;'
 
       - name: Cache Composer packages
         id: composer-cache
