@@ -2,6 +2,8 @@
 
 This repository is a solution to the assessment test as provided [Here](/devbox/resources/.assessment.md)
 
+It was implemented using Repository pattern.
+
 # Getting Started
 
 - Development Requirements

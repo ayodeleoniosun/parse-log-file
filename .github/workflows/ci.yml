@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -89,7 +89,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+          php -r "file_exists('.env.local') || copy('.env.test', '.env.local');"
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Run migrations
