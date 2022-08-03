@@ -39,7 +39,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          php -r "file_exists('.env.local') || copy('.env.test', '.env.local');"
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Run static analysis
@@ -97,10 +96,12 @@ jobs:
           php bin/console doctrine:database:drop --if-exists --force --env=test
           php bin/console doctrine:database:create --if-not-exists --env=test
           php bin/console doctrine:schema:update --env=test --force || echo "No migrations found or schema update failed"
-          php bin/console doctrine:fixtures:load --env=test --no-interaction
         env:
           DATABASE_URL: mysql://root:root@127.0.0.1:${{ job.services.mysql.ports['3306'] }}/legal_one_test
 
+      - name: actions-setup-redis
+        uses: shogo82148/actions-setup-redis@v1.19.0
+      
       - name: Execute tests
         run: php bin/phpunit
         env:
